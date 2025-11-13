@@ -37,6 +37,7 @@
                     <tr>
                         <th>Province Code</th>
                         <th>Province Name</th>
+						<th>प्रदेशको नाम</th>
                         <th>Province Address</th>
                         <th>Head Office COde</th>
                         <th>Actions</th>
@@ -46,6 +47,7 @@
                     <tr th:each="province : ${provinces}">
                         <td th:text="${province.provinceCode}"></td>
                         <td th:text="${province.provinceName}"></td>
+						<td th:text="${province.provinceNameNepali}"></td>
                         <td th:text="${province.provinceAddress}"></td>
 						<td th:text="${province.headOfficeCode}"></td>
                         <td>
@@ -61,6 +63,24 @@
                     </tr>
                 </tbody>
             </table>
+			
+			<!-- Pagination -->
+			          <div class="pagination">
+			              <ul>
+			                  <li th:if="${currentPage > 1}">
+			                      <a th:href="@{/branch/all(page=${currentPage - 1}, keyword=${keyword})}"><i class="fa fa-arrow-left"></i></a>
+			                  </li>
+
+			                  <li th:each="i : ${#numbers.sequence(1, totalPages)}"
+			                      th:classappend="${i == currentPage} ? 'active'">
+			                      <a th:href="@{/branch/all(page=${i}, keyword=${keyword})}" th:text="${i}"></a>
+			                  </li>
+
+			                  <li th:if="${currentPage < totalPages}">
+			                      <a th:href="@{/branch/all(page=${currentPage + 1}, keyword=${keyword})}"><i class="fa fa-arrow-right"></i></a>
+			                  </li>
+			              </ul>
+			          </div>
         </section>
     </main>
 

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+  <tbody th:fragment="assetTableBodyFragment">
+    <tr th:each="asset : ${assets}">
+		<td th:text="${asset.applicationDetailsEntity.date}"></td>
+      <td th:text="${asset.itemDetails}"></td>
+      <td th:text="${asset.quantity}"></td>
+      <td th:text="${asset.amount}"></td>
+      <td th:text="${asset.requestedAmount}"></td>
+      <td th:text="${asset.applicationDetailsEntity.applicationNumber}"></td>
+    </tr>
+  </tbody>
+</body>
+</html>

@@ -9,6 +9,9 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ProvinceRepository extends JpaRepository<ProvinceEntity, String> {
+	
+	List<ProvinceEntity> findByProvinceCodeContainingIgnoreCaseOrProvinceNameContainingIgnoreCaseOrProvinceAddressContainingIgnoreCase(
+            String provinceCode, String provinceName, String provinceAddress);
 
     ProvinceEntity findByProvinceName(String provinceName);
 

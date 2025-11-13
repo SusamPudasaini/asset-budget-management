@@ -46,26 +46,63 @@
                     <tr th:each="record : ${applicationRecords}">
                         <td th:text="${record.applicationNumber}"></td>
                         <td th:text="${record.fiscalYear}"></td>
-                        <td th:text="${record.toWhom}"></td>
+                        <td th:text="${record.toWhom}" class="nepali-preeti"></td>
                         <td th:text="${record.date}"></td>
-                        <td th:text="${record.subject}"></td>
+                        <td th:text="${record.subject}" class="nepali-preeti"></td>
                         <td th:text="${record.staffFullName}"></td>
-                        <td>
-                            <a th:href="@{/asset-application/edit?appNumber={id}(id=${record.applicationNumber})}" 
-                               class="action-btn edit-btn" title="Edit">
-                                <i class="fa fa-edit"></i>
-                            </a>
-                            <a th:href="@{/asset-application/confirm-delete/{id}(id=${record.applicationNumber})}" 
-                               class="action-btn delete-btn" title="Delete">
-                                <i class="fa fa-trash"></i>
-                            </a>
-                        </td>
+						<td>
+						    <!-- Edit button: goes to /new with full applicationNumber -->
+						    <a th:href="@{/asset-application/new(appNumber=${record.applicationNumber})}" 
+						       class="action-btn edit-btn" title="Edit">
+						        <i class="fa fa-edit"></i>
+						    </a>
+
+						    <!-- Delete button: keep using full applicationNumber -->
+							<a th:href="@{/asset-application/confirm-delete(id=${record.applicationNumber})}" 
+							   class="action-btn delete-btn" title="Delete">
+							    <i class="fa fa-trash"></i>
+							</a>
+						</td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(applicationRecords)}">
-                        <td colspan="11">No records found for this application number.</td>
+                        <td colspan="11">No records found</td>
                     </tr>
                 </tbody>
             </table>
+			
+			<div class="pagination">
+			    <ul>
+			        <!-- Previous button -->
+			        <li th:if="${currentPage > 1}">
+			            <a th:href="@{/asset-application/all(page=${currentPage - 1}, appNumber=${appNumber})}"><i class="fa fa-arrow-left"></i></a>
+			        </li>
+
+			        <!-- Numeric page links -->
+			        <li th:each="i : ${#numbers.sequence(1, totalPages)}"
+			            th:classappend="${i == currentPage} ? 'active'">
+			            <a th:href="@{/asset-application/all(page=${i}, appNumber=${appNumber})}" th:text="${i}"></a>
+			        </li>
+
+			        <!-- Next button -->
+			        <li th:if="${currentPage < totalPages}">
+			            <a th:href="@{/asset-application/all(page=${currentPage + 1}, appNumber=${appNumber})}"><i class="fa fa-arrow-right"></i></a>
+			        </li>
+
+			        <!-- Jump to page form -->
+			    
+			            <form th:action="@{/asset-application/all}" method="get" style="display:flex; align-items:center; gap:5px;" class="search-form">
+			                <input type="number" name="page" min="1" th:max="${totalPages}" th:value="${currentPage}" 
+			                       style="width:50px; padding:6px 12px; border:1px solid #ccc; border-radius:4px;" />
+			                <input type="hidden" name="appNumber" th:value="${appNumber}" />
+			                <button type="submit" style="padding:6px 12px; border:1px solid #ccc; border-radius:4px; background:#f0f0f0; cursor:pointer;">
+			                    <i class="fa fa-search"></i>
+			                </button>
+			            </form>
+			       
+			    </ul>
+			</div>
+
+
         </section>
     </main>
 

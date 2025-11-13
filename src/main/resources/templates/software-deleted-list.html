@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ne">
+<head>
+    <meta charset="UTF-8" />
+    <title>मेटिएका सफ्टवेयरहरूको सूची</title>
+    <link rel="stylesheet" th:href="@{/css/Style.css}" />
+    <link rel="stylesheet" th:href="@{/css/TableStyle.css}" />
+    <link rel="stylesheet" th:href="@{/css/Modal.css}" />
+   	<script th:src="@{/js/deletedSoftware.js}" defer></script>
+</head>
+<header>
+    <div th:replace="fragments/navbar :: navbar"></div>
+	<div th:replace="fragments/sidebar :: sidebar"></div>
+</header>
+
+<body>
+<main>
+	<section>
+		<div class="user-actions">
+		                <a class="btn btn-add" th:href="@{/software/list}">
+		                    <i class="fa fa-eye"></i> View Active Softwares
+		                </a>
+		                <a class="btn btn-export" onclick="exportDeletedExcel()">
+		                    <i class="fa fa-file-excel"></i> Export to Excel
+		                </a>
+		            </div>
+
+			
+<div id="deleted-message" style="text-align:center; color:red;"></div>
+
+<table id="deletedSoftwareTable" class="table-style">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Software Name</th>
+            <th>Department</th>
+			<th>Deleted By</th>
+            <th>Deleted On</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<!-- Modal for confirmation -->
+<div class="modal delete-modal" id="actionModal">
+    <div class="modal-content">
+        <span class="close" id="actionCloseBtn">&times;</span>
+        <i class="modal-icon fas fa-exclamation-triangle"></i>
+        <h2 id="actionModalMessage"></h2>
+        <div class="modal-buttons">
+            <button id="confirmActionBtn" class="delete-confirm-btn"></button>
+            <button id="cancelActionBtn" class="cancel-btn">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Success Modal -->
+<div class="modal success-modal" id="successModal">
+    <div class="modal-content">
+        <span class="close" id="successCloseBtn">&times;</span>
+        <i class="modal-icon fas fa-check-circle"></i>
+        <h2 id="successModalMessage"></h2>
+        <button id="successOkBtn">OK</button>
+    </div>
+</div>
+	</section>
+</main>
+</body>
+<script th:src="@{/js/script.js}"></script>
+<script>
+	function exportDeletedExcel() {
+	    window.location.href = `${API_BASE}/api/software/export/excel/deleted`;
+	}
+</script>
+
+</html>

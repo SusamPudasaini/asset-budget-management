@@ -43,3 +43,54 @@ form .form-group button {
 form .form-group button:hover {
     background-color: #45a049;
 }
+
+form .form-group textarea {
+    flex: 1;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    font-family: inherit; 
+    resize: vertical;     
+    min-height: 80px;      
+    line-height: 1.4;
+}
+
+form .form-group select {
+    flex: 1;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    background-color: #fff;
+    color: #333;
+    appearance: none;       
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+}
+
+form h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #333;
+    margin-top: 30px;
+    margin-bottom: 15px;
+    padding-bottom: 5px;         
+    border-bottom: 2px solid #4caf50;
+    display: inline-block;        
+}
+
+.back-btn, .download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #4caf50;
+    color: white;
+    padding: 10px 16px;
+    margin-top: 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 15px;
+    transition: background 0.2s ease;
+}

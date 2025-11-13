@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ne">
+<head>
+    <meta charset="UTF-8" />
+    <title>सफ्टवेयर विवरण सूची</title>
+    <link rel="stylesheet" th:href="@{/css/Style.css}" />
+    <link rel="stylesheet" th:href="@{/css/TableStyle.css}" />
+    <link rel="stylesheet" th:href="@{/css/Modal.css}" />
+</head>
+<body>
+<header>
+    <div th:replace="fragments/navbar :: navbar"></div>
+    <div th:replace="fragments/sidebar :: sidebar"></div>
+    <h1>सफ्टवेयर विवरण सूची</h1>
+</header>
+
+<main>
+    <section>
+        <div class="user-actions">
+            <a class="btn btn-add" th:href="@{/software/form}">
+                <i class="fa fa-plus"></i> नयाँ सफ्टवेयर थप्नुहोस्
+            </a>
+        </div>
+
+        <!-- 🔍 Search Section (Software Name) -->
+        <div class="search-section">
+            <input type="text" id="searchName" placeholder="Software Name" />
+            <button id="searchBtn" class="btn btn-search"><i class="fa fa-search"></i> Search</button>
+            <button id="resetBtn" class="btn btn-reset"><i class="fa fa-undo"></i> Reset</button>
+        </div>
+		
+		<!-- Only visible to IT Department users -->
+
+			<div th:if="${department == 'Information Technology Department'}" class="it-export-section">
+		    <button class="btn btn-export" onclick="exportActiveExcel()">Export All</button>
+
+		    <label>Export by Department:</label>
+		    <select id="departmentSelect">
+		        <option value="">-- Select Department --</option>
+		        <option value="Integrated Risk Department">Integrated Risk Department</option>
+		        <option value="Internal Audit and Inspection Department">Internal Audit and Inspection Department</option>
+		        <option value="Compliance Department">Compliance Department</option>
+		        <option value="Marketing and Sales Department">Marketing and Sales Department</option>
+		        <option value="Credit Administration and Monitoring Department">Credit Administration and Monitoring Department</option>
+		        <option value="Credit Approval and Control Department">Credit Approval and Control Department</option>
+		        <option value="Recovery and Collection Department">Recovery and Collection Department</option>
+		        <option value="Trade Finance and Guarantee Operation Department">Trade Finance and Guarantee Operation Department</option>
+		        <option value="Legal Department">Legal Department</option>
+		        <option value="Agriculture Credit and Project Management Department">Agriculture Credit and Project Management Department</option>
+		        <option value="Credit Business and Treasury Department">Credit Business and Treasury Department</option>
+		        <option value="Central Operation Department">Central Operation Department</option>
+		        <option value="Human Resource Management Department">Human Resource Management Department</option>
+		        <option value="General Service Department">General Service Department</option>
+		        <option value="Fixed Assets and New Project Development Department">Fixed Assets and New Project Development Department</option>
+		        <option value="Finance and Planning Department">Finance and Planning Department</option>
+		        <option value="Digital Banking Department">Digital Banking Department</option>
+		        <option value="Information Technology Department">Information Technology Department</option>
+		    </select>
+
+		    <button id="exportExcelBtn" onclick="exportByDepartment()">Export</button>
+		</div>
+
+
+        <div id="form-message"></div>
+
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>नाम</th>
+                <th>प्रयोग गर्ने विभाग</th>
+                <th>निर्माण गर्ने संस्था</th>
+                <th>स्थिति</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody id="software-table-body"></tbody>
+        </table>
+    </section>
+
+    <!-- 🗑️ Delete Confirmation Modal -->
+    <div class="modal delete-modal" id="deleteModal">
+        <div class="modal-content">
+            <span class="close" id="deleteCloseBtn">&times;</span>
+            <i class="modal-icon fas fa-exclamation-triangle"></i>
+            <h2 id="delete-modal-message">Are you sure you want to delete?</h2>
+            <div class="modal-buttons">
+                <button id="confirmDeleteBtn" class="delete-confirm-btn">Delete</button>
+                <button id="cancelDeleteBtn" class="cancel-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✅ Success Modal -->
+    <div class="modal success-modal" id="successModal">
+        <div class="modal-content">
+            <span class="close" id="successCloseBtn">&times;</span>
+            <i class="modal-icon fas fa-check-circle"></i>
+            <h2 id="success-modal-message">Software deleted successfully!</h2>
+            <button id="successOkBtn">OK</button>
+        </div>
+    </div>
+</main>
+
+<script th:inline="javascript">
+	const API_BASE = 'http://localhost:8082';
+	const LOGGED_IN_DEPT = /*[[${department}]]*/ 'Finance and Planning Department';
+	const LOGGED_IN_USERNAME = /*[[${username}]]*/ 'defaultUser';
+
+	let selectedSoftwareId = null;
+	let allSoftware = [];
+
+	// ----------------------- Export Functions -----------------------
+	function exportActiveExcel() {
+	    window.location.href = `${API_BASE}/api/software/export/excel/active`;
+	}
+
+	function exportByDepartment() {
+	    const deptSelect = document.getElementById("departmentSelect");
+	    if (!deptSelect) return;
+
+	    const dept = deptSelect.value;
+	    if (!dept) {
+	        alert("⚠️ Please select a department first!");
+	        return;
+	    }
+	    window.location.href = `${API_BASE}/api/software/export/excel/department?department=${encodeURIComponent(dept)}`;
+	}
+
+	// ----------------------- Load Software -----------------------
+	async function loadSoftware() {
+	    try {
+	        const response = await fetch(`${API_BASE}/api/software/all`);
+	        if (!response.ok) throw new Error('Failed to load data');
+	        const data = await response.json();
+
+	        // Only active software
+	        const activeSoftware = data.filter(s => !s.isDeleted);
+
+	        // Filter by department (IT sees all)
+	        if (LOGGED_IN_DEPT.trim().toLowerCase() === 'information technology department') {
+	            allSoftware = activeSoftware;
+	        } else {
+	            allSoftware = activeSoftware.filter(
+	                s => s.department && s.department.toLowerCase() === LOGGED_IN_DEPT.trim().toLowerCase()
+	            );
+	        }
+
+	        renderTable(allSoftware);
+	        console.log('Logged-in department:', LOGGED_IN_DEPT);
+	        console.log('Software count displayed:', allSoftware.length);
+
+	    } catch (error) {
+	        console.error('Error loading software:', error);
+	        document.getElementById('form-message').innerText = '❌ डेटा लोड गर्न समस्या भयो!';
+	    }
+	}
+
+	// ----------------------- Render Table -----------------------
+	function renderTable(data) {
+	    const tbody = document.getElementById('software-table-body');
+	    tbody.innerHTML = '';
+
+	    data.forEach(soft => {
+	        const safeName = (soft.softwareName || '').replace(/'/g, "\\'");
+	        const tr = document.createElement('tr');
+	        tr.innerHTML = `
+	            <td>${soft.id}</td>
+	            <td>${soft.softwareName || '-'}</td>
+	            <td>${soft.department || '-'}</td>
+	            <td>${soft.company || '-'}</td>
+	            <td>${soft.status || '-'}</td>
+	            <td>
+	                <a href="/software/details?id=${soft.id}" class="action-btn view-btn" title="View">
+	                    <i class="fa-solid fa-eye"></i>
+	                </a>
+	                <a href="/software/edit?id=${soft.id}" class="action-btn edit-btn" title="Edit">
+	                    <i class="fa fa-edit"></i>
+	                </a>
+	                <button class="action-btn delete-btn" title="Delete" onclick="showDeleteModal(${soft.id}, '${safeName}')">
+	                    <i class="fa fa-trash"></i>
+	                </button>
+	            </td>
+	        `;
+	        tbody.appendChild(tr);
+	    });
+	}
+
+	// ----------------------- Delete Modal -----------------------
+	function showDeleteModal(id, name) {
+	    selectedSoftwareId = id;
+	    const modal = document.getElementById('deleteModal');
+	    document.getElementById('delete-modal-message').textContent = `Do you want to delete "${name}"?`;
+	    modal.classList.add('active');
+	}
+
+	function closeDeleteModal() {
+	    document.getElementById('deleteModal').classList.remove('active');
+	    selectedSoftwareId = null;
+	}
+
+	// ----------------------- Confirm Delete -----------------------
+	async function confirmDelete() {
+	    if (!selectedSoftwareId) return;
+
+	    try {
+	        const response = await fetch(`${API_BASE}/api/software/soft-delete/${selectedSoftwareId}`, {
+	            method: 'PATCH',
+	            headers: {
+	                'Content-Type': 'application/json',
+	                'X-USERNAME': LOGGED_IN_USERNAME
+	            }
+	        });
+
+	        console.log('Delete response status:', response.status);
+	        const text = await response.text();
+	        console.log('Delete response body:', text);
+
+	        if (response.status >= 200 && response.status < 300) {
+	            closeDeleteModal();
+	            await loadSoftware();
+	            showSuccessModal(`Software deleted successfully by ${LOGGED_IN_USERNAME}!`);
+	        } else {
+	            alert(`❌ सफ्टवेयर मेटाउन समस्या भयो! (Status: ${response.status})`);
+	        }
+	    } catch (error) {
+	        console.error('Error deleting software:', error);
+	        alert('❌ सफ्टवेयर मेटाउन समस्या भयो!');
+	    }
+	}
+
+	// ----------------------- Success Modal -----------------------
+	function showSuccessModal(message) {
+	    const modal = document.getElementById('successModal');
+	    document.getElementById('success-modal-message').textContent = message;
+	    modal.classList.add('active');
+	}
+
+	function closeSuccessModal() {
+	    document.getElementById('successModal').classList.remove('active');
+	}
+
+	// ----------------------- Search / Reset -----------------------
+	function setupSearchAndReset() {
+	    const searchBtn = document.getElementById('searchBtn');
+	    const resetBtn = document.getElementById('resetBtn');
+
+	    searchBtn.addEventListener('click', () => {
+	        const nameFilter = document.getElementById('searchName').value.toLowerCase();
+	        const filtered = allSoftware.filter(s => (s.softwareName || '').toLowerCase().includes(nameFilter));
+	        renderTable(filtered);
+	    });
+
+	    resetBtn.addEventListener('click', () => {
+	        document.getElementById('searchName').value = '';
+	        renderTable(allSoftware);
+	    });
+	}
+
+	// ----------------------- Department Filter -----------------------
+	function setupDepartmentFilter() {
+	    const deptSelect = document.getElementById("departmentSelect");
+	    if (!deptSelect) return;
+
+	    deptSelect.addEventListener("change", function () {
+	        const selectedDept = this.value.trim().toLowerCase();
+	        if (!selectedDept) {
+	            renderTable(allSoftware);
+	            return;
+	        }
+	        const filtered = allSoftware.filter(item => item.department && item.department.toLowerCase() === selectedDept);
+	        renderTable(filtered);
+	    });
+	}
+
+	// ----------------------- Event Listeners for Modals -----------------------
+	function setupModalEventListeners() {
+	    document.getElementById('confirmDeleteBtn').addEventListener('click', confirmDelete);
+	    document.getElementById('cancelDeleteBtn').addEventListener('click', closeDeleteModal);
+	    document.getElementById('deleteCloseBtn').addEventListener('click', closeDeleteModal);
+	    document.getElementById('successCloseBtn').addEventListener('click', closeSuccessModal);
+	    document.getElementById('successOkBtn').addEventListener('click', closeSuccessModal);
+	}
+
+	// ----------------------- Initialize Page -----------------------
+	window.onload = () => {
+	    loadSoftware();
+	    setupSearchAndReset();
+	    setupDepartmentFilter();
+	    setupModalEventListeners();
+	};
+</script>
+
+
+
+<script th:src="@{/js/script.js}"></script>
+</body>
+</html>

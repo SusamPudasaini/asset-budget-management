@@ -40,11 +40,38 @@ public class BranchController {
 
     // View all branches
     @GetMapping("/all")
-    public String viewAllBranches(Model model) {
-        List<BranchEntity> branches = branchRepository.findAll();
-        model.addAttribute("branches", branches);
+    public String viewAllBranches(
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "page", defaultValue = "1") int page, // current page
+            Model model) {
+
+        List<BranchEntity> branchList;
+
+        if (keyword != null && !keyword.isEmpty()) {
+            branchList = branchRepository
+                    .findByBranchCodeContainingIgnoreCaseOrBranchNameContainingIgnoreCaseOrBranchAddressContainingIgnoreCase(
+                            keyword, keyword, keyword);
+        } else {
+            branchList = branchRepository.findAll();
+        }
+
+        int pageSize = 10; // 10 branches per page
+        int totalBranches = branchList.size();
+        int totalPages = (int) Math.ceil((double) totalBranches / pageSize);
+
+        int fromIndex = (page - 1) * pageSize;
+        int toIndex = Math.min(fromIndex + pageSize, totalBranches);
+
+        List<BranchEntity> branchPage = branchList.subList(fromIndex, toIndex);
+
+        model.addAttribute("branches", branchPage);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("keyword", keyword);
+
         return "branch-list";
     }
+
 
     // Show add branch form
     @GetMapping("/add")

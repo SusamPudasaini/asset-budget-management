@@ -56,6 +56,104 @@
 			        <label for="staffCode"><i class="fa fa-id-badge"></i> Staff Code</label>
 			        <input type="text" id="staffCode" name="staffCode" placeholder="Enter staff code" maxlength="10" required />
 			    </div>
+				
+				<div class="form-group">
+				    <label for="department"><i class="fa fa-building"></i> Department</label>
+				    <select id="department" name="department" required>
+				        <option value="" disabled selected>Select Department</option>
+
+				        <option value="Integrated Risk Department"
+				                th:selected="${user != null and user.department == 'Integrated Risk Department'}">
+				            Integrated Risk Department
+				        </option>
+
+				        <option value="Internal Audit and Inspection Department"
+				                th:selected="${user != null and user.department == 'Internal Audit and Inspection Department'}">
+				            Internal Audit and Inspection Department
+				        </option>
+
+				        <option value="Compliance Department"
+				                th:selected="${user != null and user.department == 'Compliance Department'}">
+				            Compliance Department
+				        </option>
+
+				        <option value="Marketing and Sales Department"
+				                th:selected="${user != null and user.department == 'Marketing and Sales Department'}">
+				            Marketing and Sales Department
+				        </option>
+
+				        <option value="Credit Administration and Monitoring Department"
+				                th:selected="${user != null and user.department == 'Credit Administration and Monitoring Department'}">
+				            Credit Administration and Monitoring Department
+				        </option>
+
+				        <option value="Credit Approval and Control Department"
+				                th:selected="${user != null and user.department == 'Credit Approval and Control Department'}">
+				            Credit Approval and Control Department
+				        </option>
+
+				        <option value="Recovery and Collection Department"
+				                th:selected="${user != null and user.department == 'Recovery and Collection Department'}">
+				            Recovery and Collection Department
+				        </option>
+
+				        <option value="Trade Finance and Guarantee Operation Department"
+				                th:selected="${user != null and user.department == 'Trade Finance and Guarantee Operation Department'}">
+				            Trade Finance and Guarantee Operation Department
+				        </option>
+
+				        <option value="Legal Department"
+				                th:selected="${user != null and user.department == 'Legal Department'}">
+				            Legal Department
+				        </option>
+
+				        <option value="Agriculture Credit and Project Management Department"
+				                th:selected="${user != null and user.department == 'Agriculture Credit and Project Management Department'}">
+				            Agriculture Credit and Project Management Department
+				        </option>
+
+				        <option value="Credit Business and Treasury Department"
+				                th:selected="${user != null and user.department == 'Credit Business and Treasury Department'}">
+				            Credit Business and Treasury Department
+				        </option>
+
+				        <option value="Central Operation Department"
+				                th:selected="${user != null and user.department == 'Central Operation Department'}">
+				            Central Operation Department
+				        </option>
+
+				        <option value="Human Resource Management Department"
+				                th:selected="${user != null and user.department == 'Human Resource Management Department'}">
+				            Human Resource Management Department
+				        </option>
+
+				        <option value="General Service Department"
+				                th:selected="${user != null and user.department == 'General Service Department'}">
+				            General Service Department
+				        </option>
+
+				        <option value="Fixed Assets and New Project Development Department"
+				                th:selected="${user != null and user.department == 'Fixed Assets and New Project Development Department'}">
+				            Fixed Assets and New Project Development Department
+				        </option>
+
+				        <option value="Finance and Planning Department"
+				                th:selected="${user != null and user.department == 'Finance and Planning Department'}">
+				            Finance and Planning Department
+				        </option>
+
+				        <option value="Digital Banking Department"
+				                th:selected="${user != null and user.department == 'Digital Banking Department'}">
+				            Digital Banking Department
+				        </option>
+
+				        <option value="Information Technology Department"
+				                th:selected="${user != null and user.department == 'Information Technology Department'}">
+				            Information Technology Department
+				        </option>
+				    </select>
+				</div>
+
 
 			    <div class="form-group">
 			        <label for="inputer"><i class="fa fa-user-edit"></i> Inputer</label>
@@ -66,6 +164,8 @@
 			        <label for="authoriser"><i class="fa fa-user-check"></i> Authoriser</label>
 			        <input type="text" id="authoriser" name="authoriser" placeholder="Enter authoriser name" required />
 			    </div>
+				
+				
 
 				<div class="form-group">
 				    <button id="formBtn" type="submit"
@@ -74,6 +174,8 @@
 				        <i class="fa fa-plus"></i> Add User
 				    </button>
 				</div>
+				
+				
 			</form>
 
 			

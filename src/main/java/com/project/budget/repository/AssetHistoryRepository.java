@@ -11,6 +11,8 @@ import java.util.List;
 @Repository
 public interface AssetHistoryRepository extends JpaRepository<AssetHistoryEntity, Long> {
 
-	@Query("SELECT a FROM AssetHistoryEntity a JOIN FETCH a.branch WHERE a.branch.branchCode = :branchCode")
-	List<AssetHistoryEntity> findByBranch_BranchCode(@Param("branchCode") String branchCode);
+    // Correct method using nested property branch.branchCode
+    @Query("SELECT a FROM AssetHistoryEntity a JOIN FETCH a.branch b WHERE b.branchCode = :branchCode")
+    List<AssetHistoryEntity> findByBranch_BranchCode(@Param("branchCode") String branchCode);
+    
 }

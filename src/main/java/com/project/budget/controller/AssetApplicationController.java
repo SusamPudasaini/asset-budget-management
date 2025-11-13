@@ -2,20 +2,24 @@ package com.project.budget.controller;
 
 import com.project.budget.entity.ApplicationDetailsEntity;
 import com.project.budget.entity.AssetHistoryEntity;
+import com.project.budget.entity.BranchEntity;
 import com.project.budget.entity.FiscalEntity;
 import com.project.budget.repository.ApplicationDetailsRepository;
 import com.project.budget.repository.AssetHistoryRepository;
 import com.project.budget.repository.BranchRepository;
 import com.project.budget.repository.FiscalRepository;
+import com.project.budget.service.AssetHistoryService;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/asset-application")
@@ -32,77 +36,186 @@ public class AssetApplicationController {
 
     @Autowired
     private AssetHistoryRepository assetHistoryRepository;
+    
+    @Autowired
+    private AssetHistoryService assetHistoryService;
+    
+ // Show delete confirmation page
+    @GetMapping("/confirm-delete")
+    public String confirmDeleteApplication(@RequestParam("id") String id, Model model) {
+        Optional<ApplicationDetailsEntity> existingApp = applicationDetailsRepository.findById(id);
+
+        if (existingApp.isPresent()) {
+            model.addAttribute("application", existingApp.get());
+            return "application-delete-confirmation"; // Thymeleaf page
+        } else {
+            return "redirect:/asset-application/all?error=ApplicationNotFound";
+        }
+    }
+
+    // Delete application by ID
+    @PostMapping("/delete")
+    public String deleteApplication(@RequestParam("id") String id, RedirectAttributes redirectAttributes) {
+        Optional<ApplicationDetailsEntity> existingApp = applicationDetailsRepository.findById(id);
+
+        if (existingApp.isPresent()) {
+            applicationDetailsRepository.deleteById(id);
+            redirectAttributes.addFlashAttribute("successMessage", 
+                "Application with ID " + id + " deleted successfully.");
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", 
+                "Application with ID " + id + " not found.");
+        }
+
+        return "redirect:/asset-application/all";
+    }
+
+
 
     // List all applications or search by number
     @GetMapping("/all")
     public String viewAllApplications(
             @RequestParam(value = "appNumber", required = false) String appNumber,
+            @RequestParam(value = "page", defaultValue = "1") int page,
             Model model) {
 
         List<ApplicationDetailsEntity> applicationRecords;
 
         if (appNumber != null && !appNumber.isEmpty()) {
-            applicationRecords = applicationDetailsRepository.findByApplicationNumberContaining(appNumber);
+            applicationRecords = applicationDetailsRepository
+                    .findByApplicationNumberContainingIgnoreCase(appNumber);
         } else {
             applicationRecords = applicationDetailsRepository.findAll();
         }
 
-        model.addAttribute("applicationRecords", applicationRecords);
+        int pageSize = 10; // 10 records per page
+        int totalRecords = applicationRecords.size();
+        int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
+
+        int fromIndex = (page - 1) * pageSize;
+        int toIndex = Math.min(fromIndex + pageSize, totalRecords);
+
+        List<ApplicationDetailsEntity> pageRecords = applicationRecords.subList(fromIndex, toIndex);
+
+        model.addAttribute("applicationRecords", pageRecords);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
         model.addAttribute("appNumber", appNumber);
+
         return "asset-application-list";
     }
 
+
     // New application form
     @GetMapping("/new")
-    public String newApplication(Model model) {
+    public String newOrEditApplication(
+            @RequestParam(value = "success", required = false) String success,
+            @RequestParam(value = "appNumber", required = false) String appNumber,
+            Model model) {
 
-        ApplicationDetailsEntity application = new ApplicationDetailsEntity();
+        ApplicationDetailsEntity application;
+        List<BranchEntity> allBranches = branchRepository.findAll();
 
-        LocalDate today = LocalDate.now();
-        FiscalEntity currentFiscal = fiscalRepository.findByDate(today);
-        if (currentFiscal == null) {
-            model.addAttribute("errorMessage", "No fiscal year found for current date!");
-            return "asset-application";
-        }
+        if (appNumber != null && !appNumber.trim().isEmpty()) {
+            // ---- Editing existing application ----
+            application = applicationDetailsRepository.findById(appNumber).orElse(null);
 
-        String fiscalYear = currentFiscal.getFiscalYear();
-        List<String> appNumbers = applicationDetailsRepository.findAllApplicationNumbersByFiscalYear(fiscalYear);
+            if (application == null) {
+                // Not found, create blank application
+                model.addAttribute("errorMessage", "Application number '" + appNumber + "' not found!");
+                application = new ApplicationDetailsEntity();
+                application.setAssetHistories(new ArrayList<>(List.of(new AssetHistoryEntity())));
+            } else {
+                // Ensure assetHistories is initialized
+                if (application.getAssetHistories() == null || application.getAssetHistories().isEmpty()) {
+                    application.setAssetHistories(new ArrayList<>(List.of(new AssetHistoryEntity())));
+                } else {
+                    // Force load branch objects to prevent null in Thymeleaf
+                    application.getAssetHistories().forEach(asset -> {
+                        if (asset.getBranch() != null) {
+                            asset.getBranch().getBranchCode(); // initializes lazy proxy
+                        } else {
+                            asset.setBranch(new BranchEntity()); // avoid null pointer
+                        }
+                    });
+                }
 
-        int nextNumber = 1;
-        if (!appNumbers.isEmpty()) {
-            int max = 0;
-            for (String num : appNumbers) {
-                try {
-                    String[] parts = num.split("-");
-                    int val = Integer.parseInt(parts[1]);
-                    if (val > max) max = val;
-                } catch (Exception ignored) {}
+                // Remove fiscal prefix if needed (for display)
+                if (application.getApplicationNumber() != null && application.getApplicationNumber().contains("-")) {
+                    String[] parts = application.getApplicationNumber().split("-");
+                    if (parts.length == 2) {
+                        application.setApplicationNumber(parts[1]);
+                    }
+                }
+
+                // Only set default fromWhom if null
+                if (application.getFromWhom() == null || application.getFromWhom().trim().isEmpty()) {
+                    application.setFromWhom("सूचना प्रविधि विभाग");
+                }
             }
-            nextNumber = max + 1;
+
+        } else {
+            // ---- Creating new application ----
+            application = new ApplicationDetailsEntity();
+
+            LocalDate today = LocalDate.now();
+            FiscalEntity currentFiscal = fiscalRepository.findByDate(today);
+            if (currentFiscal == null) {
+                model.addAttribute("errorMessage", "No fiscal year found for current date!");
+                application.setAssetHistories(new ArrayList<>(List.of(new AssetHistoryEntity())));
+                model.addAttribute("applicationDetails", application);
+                model.addAttribute("branches", allBranches);
+                return "asset-application";
+            }
+
+            String fiscalYear = currentFiscal.getFiscalYear();
+            List<String> appNumbers = applicationDetailsRepository.findAllApplicationNumbersByFiscalYear(fiscalYear);
+
+            int nextNumber = 1;
+            if (!appNumbers.isEmpty()) {
+                int max = 0;
+                for (String num : appNumbers) {
+                    try {
+                        String[] parts = num.split("-");
+                        int val = Integer.parseInt(parts[1]);
+                        if (val > max) max = val;
+                    } catch (Exception ignored) {}
+                }
+                nextNumber = max + 1;
+            }
+
+            String formattedNumber = String.format("%04d", nextNumber);
+            application.setApplicationNumber(formattedNumber);
+            application.setFiscalYear(fiscalYear);
+            application.setAssetHistories(new ArrayList<>(List.of(new AssetHistoryEntity())));
+            application.setFromWhom("सूचना प्रविधि विभाग");
+            application.setStaffPost("विभागीय प्रमुख");
+            application.setStaffCode("५५३९");
+            application.setStaffFullName("गिरी राज रेग्मी");
         }
 
-        String formattedNumber = String.format("%03d", nextNumber);
-        application.setApplicationNumber(fiscalYear + "-" + formattedNumber);
-        application.setFiscalYear(fiscalYear);
-
-        List<AssetHistoryEntity> assetHistories = new ArrayList<>();
-        assetHistories.add(new AssetHistoryEntity());
-        application.setAssetHistories(assetHistories);
-
+        // Add attributes for Thymeleaf
         model.addAttribute("applicationDetails", application);
-        model.addAttribute("branches", branchRepository.findAll());
+        model.addAttribute("branches", allBranches);
+
+        if ("true".equals(success)) {
+            model.addAttribute("successMessage", "Application saved successfully!");
+        }
+
         return "asset-application";
     }
 
-    // Save or update application
+
+ // Save or update application
     @PostMapping("/save")
-    public String saveApplication(@ModelAttribute("applicationDetails") ApplicationDetailsEntity applicationDetails,
-                                  Model model) {
+    public String saveApplication(
+            @ModelAttribute("applicationDetails") ApplicationDetailsEntity applicationDetails,
+            Model model) {
 
         String errorMessage = null;
-        String successMessage = null;
+        
+        
 
-        // Validation
         if (applicationDetails.getApplicationNumber() == null || applicationDetails.getApplicationNumber().trim().isEmpty()) {
             errorMessage = "Application number is required.";
         } else if (applicationDetails.getToWhom() == null || applicationDetails.getToWhom().trim().isEmpty()) {
@@ -115,62 +228,46 @@ public class AssetApplicationController {
             return "asset-application";
         }
 
-        // Set fiscal year
         LocalDate today = LocalDate.now();
         FiscalEntity currentFiscal = fiscalRepository.findByDate(today);
+
         if (currentFiscal != null) {
-            applicationDetails.setFiscalYear(currentFiscal.getFiscalYear());
+            String fiscalYear = currentFiscal.getFiscalYear();
+            applicationDetails.setFiscalYear(fiscalYear);
+
+            if (!applicationDetails.getApplicationNumber().contains(fiscalYear + "-")) {
+                applicationDetails.setApplicationNumber(fiscalYear + "-" + applicationDetails.getApplicationNumber());
+            }
         }
 
-        // Set reference for asset histories
         if (applicationDetails.getAssetHistories() != null) {
-            applicationDetails.getAssetHistories().forEach(item ->
-                    item.setApplicationDetailsEntity(applicationDetails)
-            );
+            applicationDetails.getAssetHistories()
+                    .forEach(item -> item.setApplicationDetailsEntity(applicationDetails));
         }
 
-        // Save or update
         applicationDetailsRepository.save(applicationDetails);
 
-        successMessage = "Application saved successfully!";
-        model.addAttribute("successMessage", successMessage);
+        String[] parts = applicationDetails.getApplicationNumber().split("-");
+        if (parts.length == 2) {
+            applicationDetails.setApplicationNumber(parts[1]);
+        }
+
         model.addAttribute("applicationDetails", applicationDetails);
         model.addAttribute("branches", branchRepository.findAll());
 
-        return "asset-application"; // same page
+        return "redirect:/asset-application/new?success=true";
     }
 
-    // Edit existing application
-    @GetMapping("/edit")
-    public String editApplication(@RequestParam("appNumber") String applicationNumber, Model model) {
-        if (applicationNumber == null || applicationNumber.trim().isEmpty()) {
-            model.addAttribute("errorMessage", "Please enter a valid application number.");
-            return "asset-application";
-        }
+    
 
-        ApplicationDetailsEntity application = applicationDetailsRepository.findById(applicationNumber).orElse(null);
 
-        if (application == null) {
-            model.addAttribute("errorMessage", "Application number '" + applicationNumber + "' not found!");
-            return "asset-application";
-        }
-
-        // Ensure asset histories exist
-        if (application.getAssetHistories() == null || application.getAssetHistories().isEmpty()) {
-            application.setAssetHistories(new ArrayList<>());
-            application.getAssetHistories().add(new AssetHistoryEntity());
-        }
-
-        model.addAttribute("applicationDetails", application);
-        model.addAttribute("branches", branchRepository.findAll());
-
-        return "asset-application";
-    }
-
+   
     // Fetch recent orders by branch
-    @GetMapping("/recent-orders")
-    @ResponseBody
-    public List<AssetHistoryEntity> getRecentOrders(@RequestParam String branchCode) {
-        return assetHistoryRepository.findByBranch_BranchCode(branchCode);
+    @GetMapping("/search")
+    public String searchAssetsByBranch(@RequestParam("branchCode") String branchCode, Model model) {
+        List<AssetHistoryEntity> assets = assetHistoryService.getByBranchCode(branchCode);
+        model.addAttribute("assets", assets);
+        return "fragments/asset-table :: assetTableBodyFragment";
     }
+
 }

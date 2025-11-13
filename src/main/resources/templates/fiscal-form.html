@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title th:text="${fiscal.fiscalId} == null ? 'Add Fiscal Year' : 'Edit Fiscal Year'"></title>
+    <link rel="stylesheet" th:href="@{/css/Style.css}" />
+    <link rel="stylesheet" th:href="@{/css/adduserStyle.css}" />
+    <link rel="stylesheet" th:href="@{/css/TableStyle.css}" />
+    <link rel="stylesheet" th:href="@{/css/FormStyle.css}" />
+</head>
+<body>
+<header>
+    <div th:replace="fragments/navbar :: navbar"></div>
+    <div th:replace="fragments/sidebar :: sidebar"></div>
+    <h1 th:text="${fiscal.fiscalId} == null ? 'Add Fiscal Year' : 'Edit Fiscal Year'"></h1>
+</header>
+
+<main>
+    <!-- Form Section -->
+    <section class="form-section">
+        <h2><i class="fa fa-calendar"></i> <span th:text="${fiscal.fiscalId} == null ? 'Add Fiscal Year' : 'Edit Fiscal Year'"></span></h2>
+
+        <div th:if="${error}" class="message error"><i class="fa fa-exclamation-circle"></i> <span th:text="${error}"></span></div>
+        <div th:if="${success}" class="message success"><i class="fa fa-check-circle"></i> <span th:text="${success}"></span></div>
+
+        <form th:action="${fiscal.fiscalId} == null ? @{/fiscal/add} : @{'/fiscal/edit/' + ${fiscal.fiscalId}}" 
+              th:object="${fiscal}" method="post">
+
+            <div class="form-group">
+                <label for="fiscalYear"><i class="fa fa-id-badge"></i> Fiscal Year</label>
+                <input type="text" id="fiscalYear" th:field="*{fiscalYear}" placeholder="e.g. 2081/82" maxlength="9" required />
+            </div>
+
+            <div class="form-group">
+                <label for="startDate"><i class="fa fa-play"></i> Start Date</label>
+                <input type="date" id="startDate" th:field="*{startDate}" required />
+            </div>
+
+            <div class="form-group">
+                <label for="endDate"><i class="fa fa-stop"></i> End Date</label>
+                <input type="date" id="endDate" th:field="*{endDate}" required />
+            </div>
+
+            <div class="form-group">
+                <button type="submit"><i class="fa fa-save"></i> <span th:text="${fiscal.fiscalId} == null ? 'Add Fiscal' : 'Update Fiscal'"></span></button>
+            </div>
+        </form>
+    </section>
+
+    <!-- Recent Fiscals (Last 5) -->
+    <section class="recent-users">
+        <h2><i class="fa fa-clock"></i> Recently Added Fiscal Years</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Year</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="f : ${recentFiscals}">
+                    <td th:text="${f.fiscalYear}"></td>
+                    <td th:text="${f.startDate}"></td>
+                    <td th:text="${f.endDate}"></td>
+                    <td>
+                        <a th:href="@{/fiscal/edit/{id}(id=${f.fiscalId})}" class="action-btn edit-btn"><i class="fa fa-edit"></i></a>
+                        <a th:href="@{/fiscal/confirm-delete/{id}(id=${f.fiscalId})}" class="action-btn delete-btn"><i class="fa fa-trash"></i></a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+</main>
+<script th:src="@{/js/script.js}"></script>
+</body>
+</html>

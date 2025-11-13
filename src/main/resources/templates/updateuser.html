@@ -55,6 +55,33 @@
                     <input type="text" id="staffCode" name="staffCode" placeholder="Enter staff code" maxlength="10" required th:value="${user.staff.staffCode}" />
                 </div>
 
+                <!-- Department Field -->
+                <div class="form-group">
+                    <label for="department"><i class="fa fa-building"></i> Department</label>
+                    <select id="department" name="department" required>
+                        <option value="" disabled>Select Department</option>
+
+                        <option value="Integrated Risk Department" th:selected="${user.department == 'Integrated Risk Department'}">Integrated Risk Department</option>
+                        <option value="Internal Audit and Inspection Department" th:selected="${user.department == 'Internal Audit and Inspection Department'}">Internal Audit and Inspection Department</option>
+                        <option value="Compliance Department" th:selected="${user.department == 'Compliance Department'}">Compliance Department</option>
+                        <option value="Marketing and Sales Department" th:selected="${user.department == 'Marketing and Sales Department'}">Marketing and Sales Department</option>
+                        <option value="Credit Administration and Monitoring Department" th:selected="${user.department == 'Credit Administration and Monitoring Department'}">Credit Administration and Monitoring Department</option>
+                        <option value="Credit Approval and Control Department" th:selected="${user.department == 'Credit Approval and Control Department'}">Credit Approval and Control Department</option>
+                        <option value="Recovery and Collection Department" th:selected="${user.department == 'Recovery and Collection Department'}">Recovery and Collection Department</option>
+                        <option value="Trade Finance and Guarantee Operation Department" th:selected="${user.department == 'Trade Finance and Guarantee Operation Department'}">Trade Finance and Guarantee Operation Department</option>
+                        <option value="Legal Department" th:selected="${user.department == 'Legal Department'}">Legal Department</option>
+                        <option value="Agriculture Credit and Project Management Department" th:selected="${user.department == 'Agriculture Credit and Project Management Department'}">Agriculture Credit and Project Management Department</option>
+                        <option value="Credit Business and Treasury Department" th:selected="${user.department == 'Credit Business and Treasury Department'}">Credit Business and Treasury Department</option>
+                        <option value="Central Operation Department" th:selected="${user.department == 'Central Operation Department'}">Central Operation Department</option>
+                        <option value="Human Resource Management Department" th:selected="${user.department == 'Human Resource Management Department'}">Human Resource Management Department</option>
+                        <option value="General Service Department" th:selected="${user.department == 'General Service Department'}">General Service Department</option>
+                        <option value="Fixed Assets and New Project Development Department" th:selected="${user.department == 'Fixed Assets and New Project Development Department'}">Fixed Assets and New Project Development Department</option>
+                        <option value="Finance and Planning Department" th:selected="${user.department == 'Finance and Planning Department'}">Finance and Planning Department</option>
+                        <option value="Digital Banking Department" th:selected="${user.department == 'Digital Banking Department'}">Digital Banking Department</option>
+                        <option value="Information Technology Department" th:selected="${user.department == 'Information Technology Department'}">Information Technology Department</option>
+                    </select>
+                </div>
+
                 <div class="form-group">
                     <label for="inputer"><i class="fa fa-user-edit"></i> Inputer</label>
                     <input type="text" id="inputer" name="inputer" placeholder="Enter inputer name" readonly th:value="${loggedinUsername}" />
@@ -71,7 +98,7 @@
             </form>
         </section>
 
-        <!-- Right: Recently Added Users -->
+        <!-- Right: Recently Updated Users -->
         <section class="recent-users">
             <h2><i class="fa fa-users"></i> Recently Updated Users</h2>
             <table>
@@ -79,6 +106,7 @@
                     <tr>
                         <th><i class="fa fa-id-badge"></i> Staff Code</th>
                         <th><i class="fa fa-user"></i> Staff Name</th>
+                        <th><i class="fa fa-building"></i> Department</th>
                         <th><i class="fa fa-tasks"></i> Action</th>
                     </tr>
                 </thead>
@@ -86,13 +114,14 @@
                     <tr th:each="user : ${recentUsers}">
                         <td th:text="${user.staff.staffCode}"></td>
                         <td th:text="${user.staff.firstName} + ' ' + ${user.staff.lastName}"></td>
+                        <td th:text="${user.department}"></td>
                         <td>
                             <a th:href="@{/UserDeleteConfirmation/{id}(id=${user.id})}" class="action-btn delete-btn" title="Delete User">
                                 <i class="fa fa-trash"></i>
                             </a>
-							<a th:href="@{/updateuser/{id}(id=${user.id})}" class="action-btn edit-btn" title="Edit User">
-																			       <i class="fa fa-edit"></i>
-							</a>
+                            <a th:href="@{/updateuser/{id}(id=${user.id})}" class="action-btn edit-btn" title="Edit User">
+                                <i class="fa fa-edit"></i>
+                            </a>
                         </td>
                     </tr>
                 </tbody>

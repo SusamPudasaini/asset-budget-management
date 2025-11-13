@@ -32,11 +32,35 @@ public class HeadOfficeController {
 
     // View all head offices
     @GetMapping("/all")
-    public String viewAllHeadOffices(Model model) {
-        List<HeadOfficeEntity> headOffices = headOfficeRepository.findAll();
-        model.addAttribute("recentHeadOffices", headOfficeRepository.findTop5ByOrderByCreatedAtDesc());
-        model.addAttribute("headOffices", headOffices);
-        return "headoffice-list";
+    public String viewAllHeadOffices(
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            Model model) {
+
+        List<HeadOfficeEntity> hoList;
+
+        if (keyword != null && !keyword.isEmpty()) {
+            hoList = headOfficeRepository
+                    .findByHeadofficeCodeContainingIgnoreCaseOrHeadofficeNameContainingIgnoreCase(keyword, keyword);
+        } else {
+            hoList = headOfficeRepository.findAll();
+        }
+
+        int pageSize = 10; // records per page
+        int totalRecords = hoList.size();
+        int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
+
+        int fromIndex = (page - 1) * pageSize;
+        int toIndex = Math.min(fromIndex + pageSize, totalRecords);
+
+        List<HeadOfficeEntity> headOfficePage = hoList.subList(fromIndex, toIndex);
+
+        model.addAttribute("headOffices", headOfficePage);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("keyword", keyword);
+
+        return "headoffice-list"; // your Thymeleaf template
     }
 
     // Show add head office form

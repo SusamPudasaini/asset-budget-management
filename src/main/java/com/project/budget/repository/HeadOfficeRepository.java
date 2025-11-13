@@ -12,5 +12,8 @@ public interface HeadOfficeRepository extends JpaRepository<HeadOfficeEntity, St
     HeadOfficeEntity findByHeadofficeCode(String headofficeCode);
     
     List<HeadOfficeEntity> findTop5ByOrderByCreatedAtDesc();
+    
+    List<HeadOfficeEntity> findByHeadofficeCodeContainingIgnoreCaseOrHeadofficeNameContainingIgnoreCase(
+            String code, String name);
 
 }

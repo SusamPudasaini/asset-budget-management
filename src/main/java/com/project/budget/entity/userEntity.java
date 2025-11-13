@@ -27,21 +27,26 @@ public class userEntity {
     @Column(length = 50)
     private String authoriser;
 
-    @Column(name = "created_at", columnDefinition = "DATETIME")
-    private LocalDateTime createdAt;
+    @Column(length = 50)
+    private String department; // ✅ NEW FIELD
 
     @Column(name = "userStatus", length = 20)
     private String userStatus;
 
+    @Column(name = "created_at", columnDefinition = "DATETIME")
+    private LocalDateTime createdAt;
+
     public userEntity() {}
 
-    public userEntity(String username, String password, StaffEntity staff, String inputer, String authoriser, String userStatus) {
+    public userEntity(String username, String password, StaffEntity staff, String inputer,
+                      String authoriser, String userStatus, String department) {
         this.username = username;
         this.password = password;
         this.staff = staff;
         this.inputer = inputer;
         this.authoriser = authoriser;
         this.userStatus = userStatus;
+        this.department = department;
         this.createdAt = LocalDateTime.now();
     }
 
@@ -69,9 +74,12 @@ public class userEntity {
     public String getAuthoriser() { return authoriser; }
     public void setAuthoriser(String authoriser) { this.authoriser = authoriser; }
 
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public String getDepartment() { return department; }
+    public void setDepartment(String department) { this.department = department; }
 
     public String getUserStatus() { return userStatus; }
     public void setUserStatus(String userStatus) { this.userStatus = userStatus; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }

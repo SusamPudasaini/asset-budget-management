@@ -19,6 +19,9 @@ public interface ApplicationDetailsRepository extends JpaRepository<ApplicationD
 	
 	Optional<ApplicationDetailsEntity> findById(String applicationNumber);
     List<ApplicationDetailsEntity> findByApplicationNumberContaining(String appNumber);
+    
+    List<ApplicationDetailsEntity> findByApplicationNumberContainingIgnoreCase(String appNumber);
+
 
 }
 

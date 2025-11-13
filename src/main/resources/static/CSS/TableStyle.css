@@ -40,6 +40,19 @@ table i, form i { margin-right: 5px; }
     background-color: #c0392b;
 }
 
+/* View button specific colors */
+.view-btn {
+    background-color: #f1c40f;  
+    color: #000;                
+}
+
+.view-btn:hover {
+    background-color: #d4ac0d;   
+}
+
+
+
+
 /* Edit button specific colors */
 .edit-btn {
     background-color: #3498db; /* blue for edit */
@@ -53,6 +66,9 @@ table i, form i { margin-right: 5px; }
 .action-btn i {
     font-size: 14px;
 }
+
+.restore-btn { background-color: #28a745; }  /* green */
+.delete-permanent-btn { background-color: #dc3545; }  /* red */
 
 .user-actions {
     display: flex;
@@ -101,3 +117,204 @@ table i, form i { margin-right: 5px; }
 .search-form button:hover {
     background-color: #45a049;
 }
+
+.pagination ul {
+    list-style: none;
+    display: flex;
+    gap: 5px;
+    padding: 0;
+    margin-top: 15px;
+}
+
+.pagination li {
+    display: inline;
+}
+
+.pagination li a {
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    text-decoration: none;
+    color: #333;
+    border-radius: 4px;
+}
+
+.pagination li.active a {
+    background-color: #45a049;
+    color: white;
+    font-weight: bold;
+    pointer-events: none;
+}
+
+
+/* ------------------- Search & Export Section ------------------- */
+
+.user-actions {
+    margin: 20px 0;
+}
+
+
+
+.user-actions .btn-add i {
+    margin-right: 8px;
+}
+
+.nepali-preeti {
+  font-family: 'preeti', Arial, sans-serif;
+  font-size: 20px;
+}
+
+/* Search Section */
+.search-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.search-section input[type="text"] {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+.search-section button {
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: 0.3s;
+}
+
+.search-section button i {
+    font-size: 14px;
+}
+
+/* Button Colors */
+.btn-search {
+    background-color: #0077ff;
+    color: #fff;
+}
+
+.btn-search:hover {
+    background-color: #005bb5;
+}
+
+.btn-reset {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+.btn-reset:hover {
+    background-color: #565e64;
+}
+
+/* Export Section (IT Dept Only) */
+.btn-export {
+    background-color: #28a745;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: none;
+    font-weight: 600;
+    margin-right: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-export:hover {
+    background-color: #1e7e34;
+}
+
+/* Export By Department Dropdown */
+#departmentSelect {
+    padding: 7px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    margin-right: 10px;
+}
+
+#exportExcelBtn {
+    background-color: #ffc107;
+    color: #222;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#exportExcelBtn:hover {
+    background-color: #e0a800;
+}
+
+
+/* ---------------- IT Department Export Section ---------------- */
+
+.it-export-section {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 20px 0;
+    background-color: #f8f9fa;
+    padding: 15px 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    border: 1px solid #e0e0e0;
+}
+
+.it-export-section label {
+    font-weight: 600;
+    margin-right: 8px;
+    color: #333;
+}
+
+.it-export-section select {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    min-width: 220px;
+}
+
+.it-export-section .btn-export {
+    background-color: #28a745;
+    color: #fff;
+    padding: 8px 18px;
+    border-radius: 6px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.it-export-section .btn-export:hover {
+    background-color: #1e7e34;
+}
+
+#exportExcelBtn {
+    background-color: #ffc107;
+    color: #222;
+    padding: 8px 18px;
+    border-radius: 6px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#exportExcelBtn:hover {
+    background-color: #e0a800;
+}
+
+
+

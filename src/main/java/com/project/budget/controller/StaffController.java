@@ -38,8 +38,13 @@ public class StaffController {
 
     // View all staff or search
     @GetMapping("/all")
-    public String viewAllStaff(@RequestParam(value = "keyword", required = false) String keyword, Model model) {
+    public String viewAllStaff(
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "page", defaultValue = "1") int page, // current page
+            Model model) {
+
         List<StaffEntity> staffList;
+
         if (keyword != null && !keyword.isEmpty()) {
             staffList = staffRepository
                     .findByStaffCodeContainingIgnoreCaseOrFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(
@@ -47,8 +52,21 @@ public class StaffController {
         } else {
             staffList = staffRepository.findAll();
         }
-        model.addAttribute("staffList", staffList);
+
+        int pageSize = 10; // 10 staff per page
+        int totalStaff = staffList.size();
+        int totalPages = (int) Math.ceil((double) totalStaff / pageSize);
+
+        int fromIndex = (page - 1) * pageSize;
+        int toIndex = Math.min(fromIndex + pageSize, totalStaff);
+
+        List<StaffEntity> staffPage = staffList.subList(fromIndex, toIndex);
+
+        model.addAttribute("staffList", staffPage);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
         model.addAttribute("keyword", keyword);
+
         return "staff-list";
     }
 

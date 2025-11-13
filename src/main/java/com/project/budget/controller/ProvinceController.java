@@ -36,12 +36,38 @@ public class ProvinceController {
 
     // View all provinces
     @GetMapping("/all")
-    public String viewAllProvinces(Model model) {
-        List<ProvinceEntity> provinces = provinceRepository.findAll();
-        model.addAttribute("provinces", provinces);
-        model.addAttribute("recentProvinces", provinceRepository.findTop5ByOrderByCreatedAtDesc());
+    public String viewAllProvinces(
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            Model model) {
+
+        List<ProvinceEntity> provinceList;
+
+        if (keyword != null && !keyword.isEmpty()) {
+            provinceList = provinceRepository
+                    .findByProvinceCodeContainingIgnoreCaseOrProvinceNameContainingIgnoreCaseOrProvinceAddressContainingIgnoreCase(
+                            keyword, keyword, keyword);
+        } else {
+            provinceList = provinceRepository.findAll();
+        }
+
+        int pageSize = 10; // 10 provinces per page
+        int totalProvinces = provinceList.size();
+        int totalPages = (int) Math.ceil((double) totalProvinces / pageSize);
+
+        int fromIndex = (page - 1) * pageSize;
+        int toIndex = Math.min(fromIndex + pageSize, totalProvinces);
+
+        List<ProvinceEntity> provincePage = provinceList.subList(fromIndex, toIndex);
+
+        model.addAttribute("provinces", provincePage);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("keyword", keyword);
+
         return "province-list";
     }
+
 
     // Show add province form
     @GetMapping("/add")

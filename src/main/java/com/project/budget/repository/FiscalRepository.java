@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.time.LocalDate;
 
 @Repository
@@ -15,6 +16,12 @@ public interface FiscalRepository extends JpaRepository<FiscalEntity, Long> {
     @Query("SELECT f FROM FiscalEntity f WHERE :currentDate BETWEEN f.startDate AND f.endDate")
     FiscalEntity findByDate(@Param("currentDate") LocalDate currentDate);
 
-    // Optional: get latest fiscal year
+    // Latest fiscal year by ID
     FiscalEntity findTopByOrderByFiscalIdDesc();
+
+    // Last 5 fiscals
+    List<FiscalEntity> findTop5ByOrderByStartDateDesc();
+
+    // All fiscals ordered by start date descending
+    List<FiscalEntity> findAllByOrderByStartDateDesc();
 }

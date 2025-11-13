@@ -1,16 +1,15 @@
 package com.project.budget.service;
 
-import org.springframework.stereotype.Service;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-
-import com.project.budget.repository.UserRepository;
+import com.project.budget.config.CustomUserDetails;
 import com.project.budget.entity.userEntity;
-
+import com.project.budget.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.stereotype.Service;
 
-import java.util.Collections;
+import java.util.Collection;
 
 @Service
 public class MyUserDetailsService implements UserDetailsService {
@@ -21,19 +20,22 @@ public class MyUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         userEntity user = userRepository.findByUsername(username);
+
         if (user == null) {
-            throw new UsernameNotFoundException("User not found");
+            throw new UsernameNotFoundException("User not found: " + username);
         }
 
-        // Map userStatus -> Role
-        String role = "activeUser".equals(user.getUserStatus()) ? "ROLE_ACTIVE" : "ROLE_NEW";
+        System.out.println("Logged in user: " + user.getUsername() + ", Department: " + user.getDepartment());
 
-        return org.springframework.security.core.userdetails.User
-                .withUsername(user.getUsername())
-                .password(user.getPassword())
-                .authorities(Collections.singletonList(() -> role)) // assign role
-                .accountLocked(false)
-                .disabled(false)
-                .build();
+        // Dynamic role assignment
+        String role = "ROLE_USER";
+        if ("Information Technology Department".equalsIgnoreCase(user.getDepartment())) {
+            role = "ROLE_IT";
+        }
+
+        Collection<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(role);
+
+        // Return CustomUserDetails (acts like User + custom fields)
+        return new CustomUserDetails(user, authorities);
     }
 }

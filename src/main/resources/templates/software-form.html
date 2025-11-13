@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ne">
+<head>
+    <meta charset="UTF-8" />
+    <title th:text="${software != null and software.id != 0} ? 'सफ्टवेयर सम्पादन गर्नुहोस्' : 'सफ्टवेयर थप्नुहोस्'"></title>
+    <link rel="stylesheet" th:href="@{/css/Style.css}" />
+    <link rel="stylesheet" th:href="@{/css/FormStyle.css}" />
+</head>
+<body>
+<header>
+    <div th:replace="fragments/navbar :: navbar"></div>
+    <div th:replace="fragments/sidebar :: sidebar"></div>
+    <h1 th:text="${software != null and software.id != 0} ? 'सफ्टवेयर सम्पादन गर्नुहोस्' : 'सफ्टवेयर थप्नुहोस्'"></h1>
+</header>
+
+<main>
+    <div class="btn-container">
+        <a href="/software/list" class="back-btn">
+            <i class="fa fa-arrow-left"></i> Back
+        </a>
+    </div>
+
+    <section class="form-section">
+        <h2>
+            <i class="fa fa-laptop-code"></i>
+            <span th:text="${software != null and software.id != 0} ? 'सफ्टवेयर सम्पादन गर्नुहोस्' : 'सफ्टवेयर थप्नुहोस्'"></span>
+        </h2>
+
+        <div id="message" class="message" style="display:none;"></div>
+
+        <!-- Form: using fetch in JS (no action). enctype for file upload retained -->
+        <form id="softwareForm" method="post" enctype="multipart/form-data">
+            <input type="hidden" id="softwareId" name="id" th:value="${software != null} ? ${software.id} : '0'" />
+            <!-- logged-in username (inputer) -->
+            <input type="hidden" id="inputer" name="inputer" th:value="${username}" />
+
+            <h3>सफ्टवेयरको आधारभूत विवरण</h3>
+
+            <div class="form-group">
+                <label><i class="fa fa-laptop-code"></i> सफ्टवेयरको नाम</label>
+                <input type="text" name="softwareName" placeholder="सफ्टवेयरको नाम" th:value="${software != null ? software.softwareName : ''}" required />
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa fa-align-left"></i> सफ्टवेयरको प्रयोजन / कार्य</label>
+                <input type="text" name="softwareDescription" placeholder="सफ्टवेयरको प्रयोजन / कार्य" th:value="${software != null ? software.softwareDescription : ''}" />
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa fa-building"></i> प्रयोग गर्ने विभाग</label>
+
+                <!-- 1) IT users: show full select so they can choose -->
+                <select name="department"
+                        required
+                        th:if="${department == 'Information Technology Department'}">
+                    <option value="" disabled th:selected="${software == null or software.department == null}">-- विभाग छान्नुहोस् --</option>
+
+                    <option value="Integrated Risk Department"
+                            th:selected="${software != null and software.department == 'Integrated Risk Department'}">
+                        Integrated Risk Department
+                    </option>
+
+                    <option value="Internal Audit and Inspection Department"
+                            th:selected="${software != null and software.department == 'Internal Audit and Inspection Department'}">
+                        Internal Audit and Inspection Department
+                    </option>
+
+                    <option value="Compliance Department"
+                            th:selected="${software != null and software.department == 'Compliance Department'}">
+                        Compliance Department
+                    </option>
+
+                    <option value="Marketing and Sales Department"
+                            th:selected="${software != null and software.department == 'Marketing and Sales Department'}">
+                        Marketing and Sales Department
+                    </option>
+
+                    <option value="Credit Administration and Monitoring Department"
+                            th:selected="${software != null and software.department == 'Credit Administration and Monitoring Department'}">
+                        Credit Administration and Monitoring Department
+                    </option>
+
+                    <option value="Credit Approval and Control Department"
+                            th:selected="${software != null and software.department == 'Credit Approval and Control Department'}">
+                        Credit Approval and Control Department
+                    </option>
+
+                    <option value="Recovery and Collection Department"
+                            th:selected="${software != null and software.department == 'Recovery and Collection Department'}">
+                        Recovery and Collection Department
+                    </option>
+
+                    <option value="Trade Finance and Guarantee Operation Department"
+                            th:selected="${software != null and software.department == 'Trade Finance and Guarantee Operation Department'}">
+                        Trade Finance and Guarantee Operation Department
+                    </option>
+
+                    <option value="Legal Department"
+                            th:selected="${software != null and software.department == 'Legal Department'}">
+                        Legal Department
+                    </option>
+
+                    <option value="Agriculture Credit and Project Management Department"
+                            th:selected="${software != null and software.department == 'Agriculture Credit and Project Management Department'}">
+                        Agriculture Credit and Project Management Department
+                    </option>
+
+                    <option value="Credit Business and Treasury Department"
+                            th:selected="${software != null and software.department == 'Credit Business and Treasury Department'}">
+                        Credit Business and Treasury Department
+                    </option>
+
+                    <option value="Central Operation Department"
+                            th:selected="${software != null and software.department == 'Central Operation Department'}">
+                        Central Operation Department
+                    </option>
+
+                    <option value="Human Resource Management Department"
+                            th:selected="${software != null and software.department == 'Human Resource Management Department'}">
+                        Human Resource Management Department
+                    </option>
+
+                    <option value="General Service Department"
+                            th:selected="${software != null and software.department == 'General Service Department'}">
+                        General Service Department
+                    </option>
+
+                    <option value="Fixed Assets and New Project Development Department"
+                            th:selected="${software != null and software.department == 'Fixed Assets and New Project Development Department'}">
+                        Fixed Assets and New Project Development Department
+                    </option>
+
+                    <option value="Finance and Planning Department"
+                            th:selected="${software != null and software.department == 'Finance and Planning Department'}">
+                        Finance and Planning Department
+                    </option>
+
+                    <option value="Digital Banking Department"
+                            th:selected="${software != null and software.department == 'Digital Banking Department'}">
+                        Digital Banking Department
+                    </option>
+
+                    <option value="Information Technology Department"
+                            th:selected="${software != null and software.department == 'Information Technology Department'}">
+                        Information Technology Department
+                    </option>
+                </select>
+
+                <!-- 2) Non-IT users: show disabled visible input for UX + hidden input (so department is submitted) -->
+                <input type="text" class="disabled-field"
+                       th:if="${department != 'Information Technology Department'}"
+                       th:value="${department}"
+                       disabled />
+
+                <input type="hidden"
+                       th:if="${department != 'Information Technology Department'}"
+                       name="department"
+                       th:value="${department}" />
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa fa-industry"></i> सफ्टवेयर निर्माण गर्ने संस्था / कम्पनी</label>
+                <input type="text" name="company" placeholder="सफ्टवेयर निर्माण गर्ने संस्था / कम्पनी" th:value="${software != null ? software.company : ''}" />
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa fa-check-circle"></i> स्वीकृत तह</label>
+                <input type="text" name="approvalLevel" placeholder="स्वीकृत तह" th:value="${software != null ? software.approvalLevel : ''}" />
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa fa-calendar-check"></i> स्वीकृत मिति</label>
+                <input type="text" name="approvalDate" placeholder="स्वीकृत मिति" th:value="${software != null ? software.approvalDate : ''}" />
+            </div>
+
+            <h3>संचालन तथा नविकरण</h3>
+
+            <div class="form-group">
+                <label><i class="fa fa-play-circle"></i> संचालनमा आएको मिति</label>
+                <input type="text" name="operationDate" placeholder="संचालनमा आएको मिति" th:value="${software != null ? software.operationDate : ''}" />
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa fa-dollar-sign"></i> खरिद रकम</label>
+                <input type="number" step="0.01" name="purchaseAmount" placeholder="खरिद रकम" th:value="${software != null ? software.purchaseAmount : ''}" />
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa fa-sync-alt"></i> नविकरण मिति</label>
+                <input type="text" name="renewalDate" placeholder="नविकरण मिति" th:value="${software != null ? software.renewalDate : ''}" />
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa fa-calendar-times"></i> समाप्त हुने मिति</label>
+                <input type="text" name="expiryDate" placeholder="समाप्त हुने मिति" th:value="${software != null ? software.expiryDate : ''}" />
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa fa-hands-helping"></i> सफ्टवेयर समर्थनको लागि स्वामित्व लिएको विभाग / कम्पनी</label>
+                <input type="text" name="supportDepartment" placeholder="सफ्टवेयर समर्थनको लागि स्वामित्व लिएको विभाग / कम्पनी" th:value="${software != null ? software.supportDepartment : ''}" />
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa fa-tasks"></i> सफ्टवेयरका विद्यमान अवस्था</label>
+                <select name="status">
+                    <option value="निर्माण भैरहेको" th:selected="${software != null and software.status == 'निर्माण भैरहेका'}">निर्माण भैरहेको</option>
+                    <option value="आशिंक संचालन" th:selected="${software != null and software.status == 'आशिंक संचालन'}">आशिंक संचालन</option>
+                    <option value="पूर्ण संचालन" th:selected="${software != null and software.status == 'पूर्ण संचालन'}">पूर्ण संचालन</option>
+                    <option value="संचालन नभएको" th:selected="${software != null and software.status == 'संचालन नभएको'}">संचालन नभएको</option>
+                </select>
+            </div>
+
+            <h3>Annual Maintainence विवरण</h3>
+
+            <div class="form-group">
+                <label><i class="fa fa-building-circle-arrow-right"></i> Annual Maintainence संस्था / कम्पनी</label>
+                <input type="text" name="amcCompany" placeholder="Annual Maintainence संस्था / कम्पनी" th:value="${software != null ? software.amcCompany : ''}" />
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa fa-calendar-alt"></i> तिरेको पछिल्लो मिति</label>
+                <input type="text" name="lastPaidDate" placeholder="तिरेको पछिल्लो मिति" th:value="${software != null ? software.lastPaidDate : ''}" />
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa fa-hourglass-half"></i> तिर्नुपर्ने मिति</label>
+                <input type="text" name="dueDate" placeholder="तिर्नुपर्ने मिति" th:value="${software != null ? software.dueDate : ''}" />
+            </div>
+
+            <h3>अन्य विवरण</h3>
+
+            <div class="form-group">
+                <label><i class="fa fa-plug"></i> CBS संग Integration भएको?</label>
+                <select name="cbsIntegrated">
+                    <option value="">--छान्नुहोस्--</option>
+                    <option value="Yes" th:selected="${software != null and software.cbsIntegrated == 'Yes'}">Yes</option>
+                    <option value="No" th:selected="${software != null and software.cbsIntegrated == 'No'}">No</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa fa-server"></i> Server Space (GB)</label>
+                <input type="text" name="serverSpace" placeholder="Server Space (GB)" th:value="${software != null ? software.serverSpace : ''}" />
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa fa-shield-alt"></i> सुरक्षाका लागि अपनाइएका कार्यहरू</label>
+                <textarea name="securityMeasures" placeholder="सुरक्षाका लागि अपनाइएका कार्यहरू" th:text="${software != null ? software.securityMeasures : ''}"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa fa-comment-alt"></i> कैफियत</label>
+                <textarea name="remarks" placeholder="कैफियत" th:text="${software != null ? software.remarks : ''}"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="sourceCodeFile"><i class="fa fa-upload"></i> Upload Source Code</label>
+                <input type="file" name="sourceCode" id="sourceCodeFile" accept=".zip,.rar" />
+                <small id="sourceCodeMsg" style="color: orange; display: none;">Note: Source code exists. Upload to overwrite</small>
+            </div>
+
+            <div class="form-group">
+                <button type="submit">
+                    <i class="fa fa-save"></i>
+                    <span th:text="${software != null and software.id != 0} ? 'सफ्टवेयर अपडेट गर्नुहोस्' : 'सफ्टवेयर थप्नुहोस्'"></span>
+                </button>
+            </div>
+        </form>
+    </section>
+
+    <!-- Success Modal -->
+    <div class="modal success-modal" id="successModal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <i class="modal-icon fas fa-check-circle"></i>
+            <h2>Operation Successful!</h2>
+            <p id="modalActionText"></p>
+            <button id="closeModalBtn">OK</button>
+        </div>
+    </div>
+</main>
+
+<script>
+    const form = document.getElementById("softwareForm");
+    const modal = document.getElementById("successModal");
+    const closeModalBtn = document.getElementById("closeModalBtn");
+    const closeSpan = document.querySelector(".modal .close");
+    const modalActionText = document.getElementById("modalActionText");
+
+    // ---------- Form Submit ----------
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+        const softwareId = formData.get("id");
+        const isUpdate = softwareId && softwareId !== "0";
+
+        // Append file if selected
+        const fileInput = document.getElementById("sourceCodeFile");
+        const file = fileInput.files[0];
+        if (file) {
+            formData.append("sourceCode", file);
+        }
+
+        try {
+            const response = await fetch("http://localhost:8082/api/software/save", {
+                method: "POST",
+                body: formData
+            });
+
+            if (response.ok) {
+                modalActionText.innerText = isUpdate
+                    ? "सफ्टवेयर सफलतापूर्वक अपडेट भयो!"
+                    : "सफ्टवेयर सफलतापूर्वक थपियो!";
+                
+                // ✅ Show modal centered
+                modal.classList.add("active");
+
+                if (!isUpdate) {
+                    form.reset();
+                    document.getElementById("softwareId").value = "0";
+                }
+            } else {
+                let txt = "Error saving software";
+                try {
+                    const err = await response.json();
+                    if (err && err.message) txt = err.message;
+                } catch (_) {}
+                alert(txt);
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Error uploading software data!");
+        }
+    });
+
+    // ---------- Modal Close ----------
+    closeModalBtn.addEventListener("click", () => {
+        modal.classList.remove("active");
+    });
+
+    closeSpan.addEventListener("click", () => {
+        modal.classList.remove("active");
+    });
+
+    window.addEventListener("click", (e) => {
+        if (e.target === modal) {
+            modal.classList.remove("active");
+        }
+    });
+
+    // ---------- Prefill (Edit Mode) ----------
+    window.addEventListener("DOMContentLoaded", async () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const softwareId = urlParams.get("id");
+
+        if (softwareId && softwareId !== "0") {
+            document.getElementById("softwareId").value = softwareId;
+
+            try {
+                const response = await fetch(`http://localhost:8082/api/software/${softwareId}`);
+                if (!response.ok) throw new Error("Not found");
+                const software = await response.json();
+
+                if (software.sourceCodeName) {
+                    const msgEl = document.getElementById('sourceCodeMsg');
+                    if (msgEl) msgEl.style.display = 'inline';
+                }
+
+                // Populate fields
+                for (const key in software) {
+                    if (!software.hasOwnProperty(key)) continue;
+                    const field = document.querySelector(`[name='${key}']`);
+                    if (!field || field.type === 'file') continue;
+                    field.value = software[key] === null ? '' : software[key];
+                }
+
+            } catch (err) {
+                console.error(err);
+                alert("Software data not found!");
+            }
+        }
+    });
+</script>
+
+
+<script th:src="@{/js/script.js}"></script>
+</body>
+</html>

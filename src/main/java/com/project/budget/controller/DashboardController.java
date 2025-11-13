@@ -1,6 +1,10 @@
 package com.project.budget.controller;
 
+import com.project.budget.config.CustomUserDetails;
+
 import com.project.budget.service.FeaturesService;
+import com.project.budget.service.MyUserDetailsService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,12 +21,23 @@ public class DashboardController {
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName(); 
-        model.addAttribute("username", username);
 
-        // Load "Add User" feature status from DB
-        int addUserStatus = featuresService.getFeatureStatus("Add User");
-        model.addAttribute("addUserStatus", addUserStatus);
+        // Get username
+        String username = auth.getName(); 
+
+        // Get the principal object
+        Object principal = auth.getPrincipal();
+        String department = "defaultDepartment"; // default value
+
+        // If using custom UserDetails with department field
+        if (principal instanceof CustomUserDetails) {  
+            department = ((CustomUserDetails) principal).getDepartment();
+        }
+
+        // Add to model
+        model.addAttribute("username", username);
+        model.addAttribute("department", department);
+
 
         return "dashboard";
     }

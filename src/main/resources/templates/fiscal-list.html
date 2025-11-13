@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>All Fiscal Years</title>
+    <link rel="stylesheet" th:href="@{/css/Style.css}" />
+    <link rel="stylesheet" th:href="@{/css/TableStyle.css}" />
+</head>
+<body>
+<header>
+    <div th:replace="fragments/navbar :: navbar"></div>
+    <div th:replace="fragments/sidebar :: sidebar"></div>
+    <h1>All Fiscal Years</h1>
+</header>
+
+<main>
+    <section>
+        <div class="user-actions">
+            <a class="btn btn-add" th:href="@{/fiscal/add}">
+                <i class="fa fa-calendar"></i> Add New Fiscal
+            </a>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Fiscal Year</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="f : ${fiscals}">
+                    <td th:text="${f.fiscalYear}"></td>
+                    <td th:text="${f.startDate}"></td>
+                    <td th:text="${f.endDate}"></td>
+                    <td>
+                        <a th:href="@{/fiscal/edit/{id}(id=${f.fiscalId})}" class="action-btn edit-btn" title="Edit">
+                            <i class="fa fa-edit"></i>
+                        </a>
+                        <a th:href="@{/fiscal/confirm-delete/{id}(id=${f.fiscalId})}" class="action-btn delete-btn" title="Delete">
+                            <i class="fa fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+</main>
+<script th:src="@{/js/script.js}"></script>
+</body>
+</html>

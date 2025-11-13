@@ -8,7 +8,6 @@
 </head>
 <body>
     <header>
-        <!-- Include navbar and sidebar fragments -->
         <div th:replace="fragments/navbar :: navbar"></div>
         <div th:replace="fragments/sidebar :: sidebar"></div>
         <h1>All Staff</h1>
@@ -16,28 +15,27 @@
 
     <main>
         <section>
-			<div class="user-actions">
-			  <a class="btn btn-add" th:href="@{/staff/add}">
-			    <i class="fa fa-user-plus"></i> Add New Staff
-			  </a>
-			  <a class="btn btn-export" th:href="@{/staff/export}">
-			    <i class="fa fa-file-excel"></i> Export to Excel
-			  </a>
+            <div class="user-actions">
+                <a class="btn btn-add" th:href="@{/staff/add}">
+                    <i class="fa fa-user-plus"></i> Add New Staff
+                </a>
+                <a class="btn btn-export" th:href="@{/staff/export}">
+                    <i class="fa fa-file-excel"></i> Export to Excel
+                </a>
 
-			  <form th:action="@{/staff/all}" method="get" class="search-form">
-			    <input type="text" name="keyword" placeholder="Search..." th:value="${keyword}" />
-			    <button type="submit"><i class="fa fa-search"></i> Search</button>
-			  </form>
-			</div>
-			
+                <form th:action="@{/staff/all}" method="get" class="search-form">
+                    <input type="text" name="keyword" placeholder="Search..." th:value="${keyword}" />
+                    <button type="submit"><i class="fa fa-search"></i> Search</button>
+                </form>
+            </div>
 
             <table>
                 <thead>
                     <tr>
                         <th>Staff Code</th>
                         <th>Full Name</th>
-						<th>Office</th>
-						<th>Created At</th>
+                        <th>Office</th>
+                        <th>Created At</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -45,22 +43,40 @@
                     <tr th:each="staff : ${staffList}">
                         <td th:text="${staff.staffCode}"></td>
                         <td th:text="${staff.firstName} + ' ' + ${staff.lastName}"></td>
-						<td th:text="${@officeLookupService.getOfficeName(staff.officeCode)}"></td>
-						<td th:text="${staff.createdAt}"></td>
+                        <td th:text="${@officeLookupService.getOfficeName(staff.officeCode)}"></td>
+                        <td th:text="${staff.createdAt}"></td>
                         <td>
                             <a th:href="@{/staff/edit/{id}(id=${staff.staffCode})}" class="action-btn edit-btn" title="Edit Staff">
                                 <i class="fa fa-edit"></i>
                             </a>
-							<a th:href="@{/staff/confirm-delete/{staffCode}(staffCode=${staff.staffCode})}" 
-							   class="action-btn delete-btn" 
-							   title="Delete Staff">
-							   <i class="fa fa-trash"></i>
-							</a>
-				
+                            <a th:href="@{/staff/confirm-delete/{staffCode}(staffCode=${staff.staffCode})}" 
+                               class="action-btn delete-btn" 
+                               title="Delete Staff">
+                               <i class="fa fa-trash"></i>
+                            </a>
                         </td>
                     </tr>
                 </tbody>
             </table>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                <ul>
+                    <li th:if="${currentPage > 1}">
+                        <a th:href="@{/staff/all(page=${currentPage - 1}, keyword=${keyword})}"><i class="fa fa-arrow-left"></i></a>
+                    </li>
+
+                    <li th:each="i : ${#numbers.sequence(1, totalPages)}"
+                        th:classappend="${i == currentPage} ? 'active'">
+                        <a th:href="@{/staff/all(page=${i}, keyword=${keyword})}" th:text="${i}"></a>
+                    </li>
+
+                    <li th:if="${currentPage < totalPages}">
+                        <a th:href="@{/staff/all(page=${currentPage + 1}, keyword=${keyword})}"><i class="fa fa-arrow-right"></i></a>
+                    </li>
+                </ul>
+            </div>
+
         </section>
     </main>
 

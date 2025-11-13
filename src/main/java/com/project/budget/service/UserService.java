@@ -34,7 +34,7 @@ public class UserService {
  
 
     // ✅ Add a new user with StaffEntity
-    public userEntity addUser(String username, String password, String staffCode, String authoriser, String userStatus) {
+    public userEntity addUser(String username, String password, String staffCode, String authoriser, String userStatus, String Department) {
         String encodedPassword = passwordEncoder.encode(password); // Hash password
         
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -52,6 +52,7 @@ public class UserService {
         user.setInputer(inputer);
         user.setAuthoriser(authoriser);
         user.setUserStatus(userStatus);
+        user.setDepartment(Department);
         user.setCreatedAt(LocalDateTime.now()); // Save timestamp
 
         return userRepository.save(user);

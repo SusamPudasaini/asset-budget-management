@@ -8,7 +8,6 @@
 </head>
 <body>
     <header>
-        <!-- Include navbar and sidebar fragments -->
         <div th:replace="fragments/navbar :: navbar"></div>
         <div th:replace="fragments/sidebar :: sidebar"></div>
         <h1>All Branches</h1>
@@ -16,28 +15,29 @@
 
     <main>
         <section>
-			<div class="user-actions">
-			  <a class="btn btn-add" th:href="@{/branch/add}">
-			    <i class="fa fa-code-branch"></i> Add New Branch
-			  </a>
-			  <a class="btn btn-export" th:href="@{/branch/export}">
-			    <i class="fa fa-file-excel"></i> Export to Excel
-			  </a>
+            <div class="user-actions">
+                <a class="btn btn-add" th:href="@{/branch/add}">
+                    <i class="fa fa-code-branch"></i> Add New Branch
+                </a>
+                <a class="btn btn-export" th:href="@{/branch/export}">
+                    <i class="fa fa-file-excel"></i> Export to Excel
+                </a>
 
-			  <form th:action="@{/branch/all}" method="get" class="search-form">
-			    <input type="text" name="keyword" placeholder="Search branches..." th:value="${keyword}" />
-			    <button type="submit"><i class="fa fa-search"></i></button>
-			  </form>
-			</div>
-			
+                <form th:action="@{/branch/all}" method="get" class="search-form">
+                    <input type="text" name="keyword" placeholder="Search branches..." th:value="${keyword}" />
+                    <button type="submit"><i class="fa fa-search"></i></button>
+                </form>
+            </div>
+
             <table>
                 <thead>
                     <tr>
                         <th>Branch Code</th>
                         <th>Branch Name</th>
+						<th>शाखाको नाम</th>
                         <th>Branch Address</th>
-						<th>Province Code</th>
-						<th>Created At</th>
+                        <th>Province Code</th>
+                        <th>Created At</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -45,9 +45,10 @@
                     <tr th:each="branch : ${branches}">
                         <td th:text="${branch.branchCode}"></td>
                         <td th:text="${branch.branchName}"></td>
+						<td th:text="${branch.branchNameNepali}"></td>
                         <td th:text="${branch.branchAddress}"></td>
-						<td th:text="${branch.provinceCode != null} ? ${branch.provinceCode.provinceCode} : 'N/A'"></td>
-						<td th:text="${branch.createdAt}"></td>
+                        <td th:text="${branch.provinceCode != null} ? ${branch.provinceCode.provinceCode} : 'N/A'"></td>
+                        <td th:text="${branch.createdAt}"></td>
                         <td>
                             <a th:href="@{/branch/edit/{id}(id=${branch.branchCode})}" 
                                class="action-btn edit-btn" title="Edit Branch">
@@ -55,12 +56,42 @@
                             </a>
                             <a th:href="@{/branch/confirm-delete/{id}(id=${branch.branchCode})}" 
                                class="action-btn delete-btn" title="Delete Branch">
-                                <i class="fa fa-trash"></i>
+                               <i class="fa fa-trash"></i>
                             </a>
                         </td>
                     </tr>
                 </tbody>
             </table>
+
+            <!-- Pagination -->
+			<div class="pagination">
+			    <ul>
+			        <!-- Previous button -->
+			        <li th:if="${currentPage > 1}">
+			            <a th:href="@{/asset-application/all(page=${currentPage - 1}, appNumber=${appNumber})}"><i class="fa fa-arrow-left"></i></a>
+			        </li>
+
+			        <!-- Numeric page links -->
+			        <li th:each="i : ${#numbers.sequence(1, totalPages)}"
+			            th:classappend="${i == currentPage} ? 'active'">
+			            <a th:href="@{/asset-application/all(page=${i}, appNumber=${appNumber})}" th:text="${i}"></a>
+			        </li>
+
+			        <!-- Next button -->
+			        <li th:if="${currentPage < totalPages}">
+			            <a th:href="@{/asset-application/all(page=${currentPage + 1}, appNumber=${appNumber})}"><i class="fa fa-arrow-right"></i></a>
+			        </li>
+
+			        <!-- Jump to page form -->
+			        <li>
+			            <form th:action="@{/branch/all}" method="get" style="display:inline-block;" class="search-form">
+			                <input type="number" name="page" min="1" th:max="${totalPages}" th:value="${currentPage}" style="width:50px;" />
+			                <input type="hidden" name="appNumber" th:value="${appNumber}" />
+			                <button type="submit"><i class="fa fa-search"></i></button>
+			            </form>
+			        </li>
+			    </ul>
+			</div>
         </section>
     </main>
 

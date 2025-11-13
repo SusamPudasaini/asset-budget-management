@@ -15,4 +15,7 @@ public interface BranchRepository extends JpaRepository<BranchEntity, String> {
     BranchEntity findByBranchCode(String branchCode);
     
     List<BranchEntity> findTop5ByOrderByCreatedAtDesc();
+    
+    List<BranchEntity> findByBranchCodeContainingIgnoreCaseOrBranchNameContainingIgnoreCaseOrBranchAddressContainingIgnoreCase(
+            String branchCode, String branchName, String branchAddress);
 }

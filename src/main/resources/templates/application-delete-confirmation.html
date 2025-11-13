@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Delete Application</title>
+    <link rel="stylesheet" th:href="@{/css/Style.css}" />
+    <link rel="stylesheet" th:href="@{/css/deleteconfirmationStyle.css}" />
+</head>
+<body>
+<header>
+    <div th:replace="fragments/navbar :: navbar"></div>
+    <div th:replace="fragments/sidebar :: sidebar"></div>
+    <h1>Delete Application</h1>
+</header>
+
+<main>
+    <div th:if="${success}" class="message message-success" th:text="${success}"></div>
+    <div th:if="${error}" class="message message-error" th:text="${error}"></div>
+
+    <section class="application-details">
+        <h2>Do You Want to Delete the Following Application?</h2>
+
+		<p>
+		    <strong>Application Number:</strong>
+		    <span th:text="${applicationNumber}">N/A</span>
+		</p>
+
+		<p>
+		    <strong>Fiscal Year:</strong>
+		    <span th:text="${application != null} ? ${application.fiscalYear} : 'N/A'">N/A</span>
+		</p>
+
+		<p>
+		    <strong>Submitted Date:</strong>
+		    <span th:text="${application != null} ? ${application.date} : 'N/A'">N/A</span>
+		</p>
+    </section>
+
+    <div class="application-actions">
+        <a th:href="@{/asset-application/all}" class="btn-cancel">
+            <i class="fa fa-times"></i> Cancel
+        </a>
+
+        <!-- ✅ Use query param because applicationNumber has "/" -->
+        <form th:action="@{/asset-application/delete(id=${application.applicationNumber})}" 
+              method="post" style="display:inline;">
+            <button type="submit" class="btn-delete">
+                <i class="fa fa-trash"></i> Delete
+            </button>
+        </form>
+    </div>
+</main>
+
+<script th:src="@{/js/script.js}"></script>
+</body>
+</html>

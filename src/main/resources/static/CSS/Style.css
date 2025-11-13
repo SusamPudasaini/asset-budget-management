@@ -5,8 +5,13 @@
 
 /* imporitng preeti */
 @font-face {
-    font-family: 'Himali';
-    src: url('/fonts/Himali.ttf') format('truetype'); 
+    font-family: 'himali';
+    src: url('/fonts/himali.ttf') format('truetype'); 
+}
+
+@font-face {
+    font-family: 'preeti';
+    src: url('/fonts/preeti.ttf') format('truetype'); 
 }
 
 /* Body and font */
@@ -232,3 +237,129 @@ main section p {
 .sidebar .menu-item.active .submenu-arrow {
     transform: rotate(180deg);
 }
+
+/* ----------- Base Modal Styles ----------- */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.modal.active {
+    display: flex; /* Show modal when active */
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    position: relative;
+    animation: slideDown 0.3s ease-in-out;
+}
+
+.modal-content h2 {
+    margin: 15px 0;
+    font-size: 20px;
+    color: #333;
+}
+
+.modal .close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 25px;
+    color: #aaa;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.modal .close:hover {
+    color: #000;
+}
+
+.modal-icon {
+    font-size: 50px;
+    margin-bottom: 10px;
+}
+
+/* ----------- Success Modal ----------- */
+.success-modal .modal-icon {
+    color: #2ecc71;
+}
+
+.success-modal #successOkBtn {
+    background-color: #2ecc71;
+    color: white;
+    padding: 10px 25px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+.success-modal #successOkBtn:hover {
+    background-color: #27ae60;
+}
+
+/* ----------- Delete / Warning Modal ----------- */
+.delete-modal .modal-icon {
+    color: #e74c3c;
+}
+
+.delete-confirm-btn {
+    background-color: #e74c3c;
+    color: white;
+    padding: 10px 25px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 10px;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+.delete-confirm-btn:hover {
+    background-color: #c0392b;
+}
+
+.cancel-btn {
+    background-color: #95a5a6;
+    color: white;
+    padding: 10px 25px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+.cancel-btn:hover {
+    background-color: #7f8c8d;
+}
+
+/* ----------- Animations ----------- */
+@keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+@keyframes slideDown {
+    from {transform: translateY(-50px); opacity: 0;}
+    to {transform: translateY(0); opacity: 1;}
+}
+

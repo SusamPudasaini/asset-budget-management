@@ -49,19 +49,33 @@ public class UserController {
     // User page
     @GetMapping("/users")
     public String viewUsers(
-            @RequestParam(value = "query", required = false) String query,
-            Model model) {
+    		 @RequestParam(value = "query", required = false) String query,
+    	        @RequestParam(value = "page", defaultValue = "1") int page, // current page
+    	        Model model) {
 
-        List<userEntity> users;
-        if (query != null && !query.isEmpty()) {
-            users = userRepository.findByUsernameContainingIgnoreCase(query);
-        } else {
-            users = userRepository.findAll();
-        }
+    	    List<userEntity> users;
 
-        model.addAttribute("users", users);
-        model.addAttribute("query", query); // pass the query back
-        return "users";
+    	    if (query != null && !query.isEmpty()) {
+    	        users = userRepository.findByUsernameContainingIgnoreCase(query);
+    	    } else {
+    	        users = userRepository.findAll();
+    	    }
+
+    	    int pageSize = 10; // show 10 users per page
+    	    int totalUsers = users.size();
+    	    int totalPages = (int) Math.ceil((double) totalUsers / pageSize);
+
+    	    int fromIndex = (page - 1) * pageSize;
+    	    int toIndex = Math.min(fromIndex + pageSize, totalUsers);
+
+    	    List<userEntity> usersPage = users.subList(fromIndex, toIndex);
+
+    	    model.addAttribute("users", usersPage);
+    	    model.addAttribute("currentPage", page);
+    	    model.addAttribute("totalPages", totalPages);
+    	    model.addAttribute("query", query);
+
+    	    return "users";
     }
 
     @GetMapping("/adduser")
@@ -106,6 +120,7 @@ public class UserController {
             @RequestParam("confirmPassword") String confirmPassword,
             @RequestParam("staffCode") String staffCode,
             @RequestParam("authoriser") String authoriser,
+            @RequestParam("department") String department,
             String userStatus,
             Model model) {
     	
@@ -141,7 +156,7 @@ public class UserController {
         }
         else {
             // Save user to DB with all fields
-            userService.addUser(username, password, staffCode, authoriser, userStatus);
+            userService.addUser(username, password, staffCode, authoriser, userStatus,department);
             model.addAttribute("success", "User added successfully!");
         }
 
